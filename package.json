@@ -1,0 +1,37 @@
+{
+  "name": "here-on-demand-mobility-sdk-demos",
+  "version": "1.0.0",
+  "description": "HERE On-Demand Mobility SDK demos",
+  "repository": "git@github.com:heremaps/on-demand-mobility-demos-node.git",
+  "scripts": {
+    "cli-demo": "node src/cli-demo.js",
+    "server": "node src/express-demo.js",
+    "start": "npm run cli-demo",
+    "lint": "eslint --ext .js --max-warnings 0 src/",
+    "build-jsdoc": "jsdoc src/* -d doc -R README.md"
+  },
+  "author": "Thijs Mergaert <thijs.mergaert@here.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "2.1.5",
+    "body-parser": "1.17.1",
+    "express": "4.15.2",
+    "form-data": "2.1.2",
+    "lodash": "4.17.4",
+    "node-zip": "1.1.1",
+    "sqlite3": "3.1.8",
+    "superagent": "3.5.0",
+    "xmlbuilder": "8.2.2"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "3.17.1",
+    "eslint-config-airbnb": "14.1.0",
+    "eslint-plugin-import": "2.2.0",
+    "eslint-plugin-jsx-a11y": "4.0.0",
+    "eslint-plugin-react": "6.10.0",
+    "jsdoc": "3.4.3"
+  }
+}
