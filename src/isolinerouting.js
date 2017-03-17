@@ -7,7 +7,7 @@ const config = require('./config');
 const superagent = require('superagent');
 
 /**
- * Builds a GET request for the Isoline Routing API.
+ * Builds a request query object for the Isoline Routing API.
  * An isoline is a shape that represents the area which can be reached from a certain point within a given time or distance (regular isoline),
  * or the area from which a certain point point can be reached within a given time or distance (reverse isoline)
  *
@@ -16,7 +16,7 @@ const superagent = require('superagent');
  * @param {Object} location - The location around which to build the isoline
  * @param {number} range - The distance (in meters) or time (in seconds).  The unit is determined by the rangeType parameter
  * @param {string} mode - The routing mode (e.g. 'fastest;car;traffic:enabled')
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildIsolineRoutingRequestQuery(rangeType, isReverse, location, range, mode) {
   const locationParamKey = isReverse ? 'destination' : 'start';

@@ -7,12 +7,12 @@ const config = require('./config');
 const superagent = require('superagent');
 
 /**
- * Builds a GET request for the Geocoder API.
+ * Builds a request query object for the Geocoder API.
  *
  * @param {string} address - The address to geocode
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
-function buildGeocoderRequestOptions(address) {
+function buildGeocoderRequestQuery(address) {
   return Object.assign({
     gen: 9, // latest generation of the Geocoder API, recommended (see the Geocoder API documentation for more information)
     searchText: address,
@@ -23,10 +23,10 @@ function buildGeocoderRequestOptions(address) {
  * Calls the Geocoder API indexes to find a lat/lon position for an address
  *
  * @param {string} address - The address to geocode
- * @returns {Object}
+ * @returns {Object} An object containing the position
  */
 function geocode(address) {
-  const query = buildGeocoderRequestOptions(address);
+  const query = buildGeocoderRequestQuery(address);
 
   return superagent.get('https://geocoder.cit.api.here.com/6.2/geocode.json')
     .query(query)
@@ -39,7 +39,7 @@ function geocode(address) {
       return { lat: position.Latitude, lon: position.Longitude };
     })
     .catch((err) => {
-      console.error('error while querying geocoder API', err.status, err.message);
+      console.error('Error while querying geocoder API', err.status, err.message, err.stack);
       return Promise.reject(new Error(err.message));
     });
 }

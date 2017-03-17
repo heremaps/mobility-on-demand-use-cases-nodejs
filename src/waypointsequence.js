@@ -8,14 +8,14 @@ const superagent = require('superagent');
 const _ = require('lodash');
 
 /**
- * Builds a GET request for the Waypoint Sequence Extension API.
+ * Builds a request query for the Waypoint Sequence Extension API.
  *
  * @param {string} mode - The routing mode (e.g. 'fastest;car;traffic:enabled')
  * @param {string} optimizeFor - The parameter to optimize the sequence for ('time' or 'distance')
  * @param {Object} start - The start waypoint
  * @param {Object} end - The end waypoint
  * @param {Object[]} destinations  - Array of intermediate waypoints to find optimal sequence for
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildFindSequenceRequestQuery(mode, optimizeFor, start, end, destinations) {
   const destinationParams = _.fromPairs(destinations.map((value, index) => {

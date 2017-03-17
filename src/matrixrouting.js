@@ -9,12 +9,12 @@ const _ = require('lodash');
 
 
 /**
- * Builds a GET request for the Matrix Routing API.
+ * Builds a request query object for the Matrix Routing API.
  *
  * @param {Object[]} starts An array of locations that serve as start points
  * @param {Object[]} destinations An array of locations that serve as destination points
  * @param {string} mode The routing mode (e.g. 'fastest;car;traffic:enabled')
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildEtaMatrixRoutingRequestQuery(starts, destinations, mode) {
   const startParams = _.fromPairs(starts.map((value, index) => {

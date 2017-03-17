@@ -8,11 +8,11 @@ const superagent = require('superagent');
 const _ = require('lodash');
 
 /**
- * Builds a GET request for the Platform Data Extension API ADMIN_PLACE_X indexes.
+ * Builds a request query object for the Platform Data Extension API ADMIN_PLACE_X indexes.
  * These indexes tell you which tiles to request from the Platform Data Extension's layers to get information about specific places
  *
  * @param {string[]} adminPlaceIds - Array of admin place IDs
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildPDEAdminPlaceIndexRequestQuery(adminPlaceIds) {
   return Object.assign({
@@ -23,10 +23,10 @@ function buildPDEAdminPlaceIndexRequestQuery(adminPlaceIds) {
 }
 
 /**
- * Builds a GET request for the Platform Data Extension (PDE) Tiles API based on a response from the PDE Indexes
+ * Builds a request query object for the Platform Data Extension (PDE) Tiles API based on a response from the PDE Indexes
  *
  * @param {Object} indexLayerResponse - Layer Object as returned from PDE Indexes
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildPDETilesRequestQueryFromIndexResponse(indexLayerResponse) {
   return Object.assign({

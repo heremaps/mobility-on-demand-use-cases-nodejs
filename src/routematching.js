@@ -7,10 +7,10 @@ const config = require('./config');
 const superagent = require('superagent');
 
 /**
- * Builds a POST request for the Route Matching Extension API.
+ * Builds a request query object for the Route Matching Extension API.
  *
  * @param {string} routeMode - The routing mode ('car' or 'pedestrian')
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildMatchRouteRequestQuery(routeMode) {
   return Object.assign(

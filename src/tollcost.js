@@ -7,7 +7,7 @@ const config = require('./config');
 const superagent = require('superagent');
 
 /**
- * Builds a GET request for the calculateroute.json endpoint of the Toll Cost Extension API.
+ * Builds a request query for the calculateroute.json endpoint of the Toll Cost Extension API.
  * The calculateroute.json endpoint calculates a route given two (or more) waypoints, and returns a route, along with its associated toll costs
  *
  * @param {Object} start - The start location
@@ -15,7 +15,7 @@ const superagent = require('superagent');
  * @param {string} mode - The routing mode (e.g. 'fastest;car;traffic:enabled')
  * @param {string} currency - The currency in which to return toll cost information (three-letter code, e.g. 'USD')
  * @param {Object} vehicleSpec - An object containing the vehicle's attributes. See the Toll Cost Extension's API Reference for more information on available parameters
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildTollCostCalculateRouteRequestQuery(start, destination, mode, currency, vehicleSpec) {
   return Object.assign({
@@ -27,7 +27,7 @@ function buildTollCostCalculateRouteRequestQuery(start, destination, mode, curre
 }
 
 /**
- * Builds a GET request for the tollcost.json endpoint of the Toll Cost Extension API.
+ * Builds a request query for the tollcost.json endpoint of the Toll Cost Extension API.
  * The tollcost.json endpoint return detailed toll cost information associated with given linkids
  *
  * @param {string} mode - The routing mode (e.g. 'fastest;car;traffic:enabled')
@@ -35,7 +35,7 @@ function buildTollCostCalculateRouteRequestQuery(start, destination, mode, curre
  * @param {Object} vehicleSpec - An object containing the vehicle's attributes. See the Toll Cost Extension's API Reference for more information on available parameters
  * @param {string[]} links - An array of link ids that were traversed as part of the route (in order of traversal)
  * @param {string} rollup - Comma separated list of aggregation levels in the result. Currently supported: 'none', 'total', 'tollsys', 'country'
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildTollCostLinksRequestQuery(mode, currency, vehicleSpec, links, rollup) {
   return Object.assign({
@@ -74,7 +74,7 @@ function costForWaypoints(start, destination, mode, currency, vehicleSpec) {
  * @param {Object} vehicleSpec - An object containing the vehicle's attributes. See the Toll Cost Extension's API Reference for more information on available parameters
  * @param {string[]} links - An array of link ids that were traversed as part of the route (in order of traversal)
  * @param {string} rollup - Comma separated list of aggregation levels in the result. Currently supported: 'none', 'total', 'tollsys', 'country'
- * @returns {Object}
+ * @returns {Object} An object containing the costs by country
  */
 function costForLinks(mode, currency, vehicleSpec, links, rollup) {
   const query = buildTollCostLinksRequestQuery(mode, currency, vehicleSpec, links, rollup);
