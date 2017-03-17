@@ -4,10 +4,9 @@
  */
 
 const config = require('./config');
-const https = require('https');
+
 const _ = require('lodash');
 const superagent = require('superagent');
-const FormData = require('form-data');
 const zip = require('node-zip')();
 
 /**
@@ -15,7 +14,7 @@ const zip = require('node-zip')();
  * This request will test a location for the administrative areas (e.g. cities, counties, countries, etc.) it is within.
  *
  * @param {Object} location The location to test for
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildGfeWithPdeLayersRequestQuery(location) {
   return Object.assign({
@@ -34,7 +33,7 @@ function buildGfeWithPdeLayersRequestQuery(location) {
  * @param {string[]} layerIds An array of ids of the layers to test the location for
  * @param {string[]} keyAttributes An array of the attributes in each layer which uniquely identify an entry.
  * This array must always have the same length as the layerIds array, as a keyAttribute needs to be present for each layer
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
 function buildGfeWithCustomLayersRequestQuery(location, layerIds, keyAttributes) {
   return Object.assign({
@@ -48,22 +47,14 @@ function buildGfeWithCustomLayersRequestQuery(location, layerIds, keyAttributes)
  * Builds a POST request for uploading a layer to the Geofencing Extension.
  *
  * @param {string} layerId  The id of the layer being uploaded
- * @param {Object} form A FormData object containing the file to be uploaded
- * @returns {Object} An object containing the request options
+ * @returns {Object} An object containing the request query
  */
-function buildUploadLayerRequestOptions(layerId, form) {
-  const requestParams = _({
+function buildUploadLayerRequestQuery(layerId) {
+  return Object.assign({
     layer_id: layerId,
-    app_id: config.app_id,
-    app_code: config.app_code,
-  }).map((value, key) => `${key}=${encodeURIComponent(value)}`).join('&');
-  return {
-    method: 'POST',
-    hostname: 'cle.cit.api.here.com',
-    path: ['/2/layers/upload.json', requestParams].join('?'),
-    headers: form.getHeaders(),
-  };
+  }, config);
 }
+
 
 /**
  * Calls the Geofencing Extension API to find administrative areas a location is within.
@@ -89,7 +80,7 @@ function findAdminAreasForLocation(location) {
       return areas;
     })
     .catch((err) => {
-      console.error('Error while querying geofencing extension API', err.status, err.message, err.response && err.response.error && err.response.error.text);
+      console.error('Error while querying geofencing extension API', err.status, err.message, _.get(err, 'response.text'));
       return Promise.reject(new Error(err.message));
     });
 }
@@ -122,59 +113,35 @@ function searchCustomLayers(location, layerIds, keyAttributes) {
       return rows;
     })
     .catch((err) => {
-      console.error('error while querying custom layer extension API', err.status, err.message, err.response && err.response.body);
+      console.error('Error while querying custom layer extension API', err.status, err.message, _.get(err, 'response.text'));
       return Promise.reject(new Error(err.message));
     });
 }
 
 /**
- * Calls the Geofencing Extension API to upload a WKT file to a custom layer.
+ * Calls the Custom Location Extension API to upload a WKT file to a custom layer.
  *
  * @param {Object} location The location to test for
  * @param {Object} wkt polygon in well-known-text format
  */
 function uploadWkt(layerId, wkt) {
-  return new Promise((fulfill, reject) => {
-    // The Geofencing Extension expects the data as "multipart/form-data" MIME-type, hence we use the FormData module to append the data
-    const form = new FormData();
-
-    // The data must be zipped before uploading to the Geofencing Extension
-    // The WKT filename is arbitrary, but must have the .wkt extension
-    zip.file('wktUpload.wkt', wkt);
-    const wktData = zip.generate({ type: 'base64', compression: 'DEFLATE' });
-    const buffer = new Buffer(wktData, 'base64');
-
-    // The file must be appended as 'zipfile'
-    form.append('zipfile', buffer, { filename: 'wktUpload.wkt.zip', contentType: 'application/zip' });
-
-    const options = buildUploadLayerRequestOptions(layerId, form);
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (d) => {
-        data += d;
-      });
-      res.on('end', () => {
-        if (res.statusCode >= 400) {
-          reject(JSON.parse(data));
-        } else {
-          console.log('Uploaded WKT layer');
-          fulfill();
-        }
-      });
+  // The data must be zipped before uploading to the Custome Location Extension
+  // The WKT filename is arbitrary, but must have the .wkt extension
+  zip.file('wktUpload.wkt', wkt);
+  const wktData = zip.generate({ type: 'base64', compression: 'DEFLATE' });
+  const buffer = new Buffer(wktData, 'base64');
+  const query = buildUploadLayerRequestQuery(layerId);
+  return superagent.post('https://cle.cit.api.here.com/2/layers/upload.json')
+    .query(query)
+    .attach('zipfile', buffer, 'wktUpload.wkt.zip')
+    .catch((err) => {
+      console.error('Error while uploading to the Custom Location Extension API', err.status, err.message, _.get(err, 'response.text'));
+      return Promise.reject(new Error(err.message));
     });
-    form.pipe(req);
-    req.on('error', (err) => {
-      reject(err);
-    });
-
-    req.end();
-  });
 }
 
-const geofencing = {
+module.exports = {
   findAdminAreasForLocation,
   searchCustomLayers,
   uploadWkt,
 };
-
-module.exports = geofencing;
