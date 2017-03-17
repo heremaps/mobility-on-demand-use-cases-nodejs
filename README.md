@@ -1,4 +1,4 @@
-# On Demand Mobility Demos (NodeJS)
+# Mobility On Demand Use Cases (NodeJS)
 
 This repository hosts 2 demo applications developed in `NodeJS` exposing server-side and CLI integration with the **HERE REST APIs & Platform Extensions**.
 
