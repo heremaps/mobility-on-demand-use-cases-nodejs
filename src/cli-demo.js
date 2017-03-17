@@ -12,7 +12,7 @@ const geocoder = require('./geocoder');
 const waypointsequence = require('./waypointsequence');
 const db = require('./db');
 const gpslogs = require('./gpslogs');
-const async = require('async');
+const bluebird = require('bluebird');
 const builder = require('xmlbuilder');
 
 const CUSTOM_LAYER_ID = 'ON_DEMAND_DEMO_LAYER';
@@ -98,16 +98,13 @@ function requestRideScenario(pickupLocation, dropoffLocation) {
         // Then create a new trip, storing the calculated shape
         .then(reverseIsochrone => db.createTrip(pickupLocation, dropoffLocation, reverseIsochrone))
         // Then wait for 35 seconds before stopping loops (only for the purposes of this example, in a real example the trip update loop would run indefinitely)
-        .then(() => new Promise((fulfill) => {
-          console.log('Letting demo run for 35 seconds');
-          setTimeout(() => {
-            // Stop timers
-            clearInterval(tripInterval);
-            driverIntervals.forEach((driverInterval) => {
-              clearInterval(driverInterval);
-            });
-            fulfill();
-          }, 35000);
+        .then(() => console.log('Letting demo run for 35 seconds'))
+        .then(() => bluebird.delay(35000).then(() => {
+          // Stop timers
+          clearInterval(tripInterval);
+          driverIntervals.forEach((driverInterval) => {
+            clearInterval(driverInterval);
+          });
         }));
     });
 }
@@ -128,9 +125,9 @@ function postProcessingScenario(gpsLog) {
   const numPassengers = 2;
   // First convert the array of position updates into a GPX trace
   // eslint-disable-next-line no-use-before-define
-  return buildGpx(gpsLog)
-    // Then use the Route Matching Extension to match the GPX trace to HERE links
-    .then(gpx => routematching.matchGpx('car', gpx))
+  const gpx = buildGpx(gpsLog);
+  // Then use the Route Matching Extension to match the GPX trace to HERE links
+  return routematching.matchGpx('car', gpx)
     .then(links =>
           // We'll use a random driver for the sake of this example
           db.getOneDriver()
@@ -197,7 +194,7 @@ function calculateCostForLinksPerCountry(mode, startTime, currency, vehicleSpec,
   const rollup = 'country';
   // First use the Toll Cost Extension API to determine the cost associated with the links
   return tollcost.costForLinks(mode, currency, vehicleSpec, links, rollup)
-  // Then return costs summary by country as returned by the Toll Cost Extension API
+    // Then return costs summary by country as returned by the Toll Cost Extension API
     .then(tollcostResponse => tollcostResponse.costsByCountry);
 }
 
@@ -218,7 +215,7 @@ function buildGpx(gpsLog) {
   });
   // Convert xml to string
   const xmlString = xml.doc().end();
-  return Promise.resolve(xmlString);
+  return xmlString;
 }
 
 /**
@@ -240,20 +237,18 @@ function findNearbyTrips(location) {
  * @returns {string} id of the closest driver
  */
 function getClosestDriver(drivers, etaMatrix) {
-  return new Promise((fulfill) => {
-    const driversWithEta = [];
-    // Each entry in the ETA matrix has a startIndex and a destinationIndex, which represent the indices in the 'starts' and 'destinations' array which are associate with the entry
-    etaMatrix.forEach((entry) => {
-      // Here, we use the startIndex as index in the drivers array, as we passed the drivers as 'starts' array when calling the Matrix Routing API prior to calling this function
-      console.log('Driver', drivers[entry.startIndex].name, 'is', entry.eta, 'seconds away from the destination');
-      driversWithEta.push(Object.assign({}, drivers[entry.startIndex], { eta: entry.eta }));
-    });
-    // To find the closest driver, order the drivers by ETA
-    const closestDriver = driversWithEta.sort((a, b) => a.eta - b.eta)[0];
-    console.log('Estimated ETA for closest driver:', closestDriver.eta);
-    // Finally, fulfill the promise, returning the id of the closest driver
-    fulfill(closestDriver.rowid);
+  const driversWithEta = [];
+  // Each entry in the ETA matrix has a startIndex and a destinationIndex, which represent the indices in the 'starts' and 'destinations' array which are associate with the entry
+  etaMatrix.forEach((entry) => {
+    // Here, we use the startIndex as index in the drivers array, as we passed the drivers as 'starts' array when calling the Matrix Routing API prior to calling this function
+    console.log('Driver', drivers[entry.startIndex].name, 'is', entry.eta, 'seconds away from the destination');
+    driversWithEta.push(Object.assign({}, drivers[entry.startIndex], { eta: entry.eta }));
   });
+  // To find the closest driver, order the drivers by ETA
+  const closestDriver = driversWithEta.sort((a, b) => a.eta - b.eta)[0];
+  console.log('Estimated ETA for closest driver:', closestDriver.eta);
+  // Finally, return the id of the closest driver
+  return closestDriver.rowid;
 }
 
 /**
@@ -288,15 +283,15 @@ function startDriverLocationUpdates() {
 function assignTrips() {
   // First, get all currently unassigned trips
   return db.getNewTrips()
-    .then(trips => new Promise((fulfill, reject) => {
+    .then((trips) => {
       // Iterating over trips in series to avoid having the same driver assigned to multiple trips
       // This is okay the purposes of this example, but may be too slow when dealing with high volumes of trips and drivers
-      async.eachSeries(trips, (trip, callback) => {
+      bluebird.mapSeries(trips, trip =>
         // For each trip, get a list of candidate drivers
         db.getCandidateDriversForTrip(trip.rowid)
           .then((drivers) => {
             if (drivers.length === 0) {
-              return callback();
+              return Promise.resolve();
             }
             const mode = 'fastest;car;traffic:enabled';
             const starts = drivers.map(driver => ({ lat: driver.latitude, lon: driver.longitude }));
@@ -307,18 +302,9 @@ function assignTrips() {
               .then(matrix => getClosestDriver(drivers, matrix))
               // Then assign the closest driver to the trip
               // You can insert your more complex matchmaking algorithm here as this logic is fairly primitive
-              .then(closestDriver => db.assignDriverToTrip(trip.rowid, closestDriver))
-              .then(callback);
-          })
-          .catch(callback);
-      }, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          fulfill();
-        }
-      });
-    }));
+              .then(closestDriver => db.assignDriverToTrip(trip.rowid, closestDriver));
+          }));
+    });
 }
 
 /**
