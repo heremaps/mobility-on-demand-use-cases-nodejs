@@ -258,6 +258,18 @@ function updateDriverLocation(id, location) {
   });
 }
 
+function driverIsTripCandidate(id) {
+  return new Promise((fulfill, reject) => {
+    db.get(`SELECT rowid FROM Trip_Driver where driver_id = ${id}`, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        fulfill(Boolean(row));
+      }
+    });
+  });
+}
+
 function assignDriverToTrip(tripId, driverId) {
   return new Promise((fulfill, reject) => {
     console.log('Assigning driver', driverId, 'to trip', tripId);
@@ -399,6 +411,7 @@ const database = {
   clearAllTrips,
   close,
   createTrip,
+  driverIsTripCandidate,
   findAreaIdForLocation,
   getAllDrivers,
   getCandidateDriversForTrip,
