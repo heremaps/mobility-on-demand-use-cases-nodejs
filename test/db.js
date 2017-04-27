@@ -78,6 +78,10 @@ describe('database test suite', () => {
     return db.createTrip({ lat: 38.60, lon: -120.30 }, { lat: 39.60, lon: -120.30 }, wkt);
   });
 
+  it('driver should not be a candidate for a trip', () => db.getOneDriver()
+     .then(driver => db.driverIsTripCandidate(driver.rowid))
+     .then(isCandidate => assert.strictEqual(isCandidate, false)));
+
   it('should get candidate drivers for trip', () => {
     let trip;
     let driver;
@@ -103,7 +107,9 @@ describe('database test suite', () => {
       .then((trips) => { trip = _.first(trips); })
       .then(() => db.addCandidateDriver(driver.rowid, [trip.rowid]))
       .then(() => db.getCandidateDriversForTrip(trip.rowid))
-      .then(drivers => db.assignDriverToTrip(trip.rowid, _.first(drivers).rowid));
+      .then(drivers => db.assignDriverToTrip(trip.rowid, _.first(drivers).rowid))
+      .then(() => db.driverIsTripCandidate(driver.rowid))
+      .then(isCandidate => assert(isCandidate));
   });
 
   it('should get drivers in area', () => {

@@ -263,12 +263,14 @@ function getClosestDriver(drivers, etaMatrix) {
 function updateDriverLocation(id, location) {
   // First update the driver's location in the database
   db.updateDriverLocation(id, location)
+    .then(() => db.driverIsTripCandidate(id))
+    .then(isCandidate => (isCandidate ? Promise.reject(new Error('DRIVER_ASSIGNED')) : {}))
     // Then find nearby unassigned trips
     .then(() => findNearbyTrips(location))
     // Then add this driver as a candidate to any trips that were found
     .then(trips => db.addCandidateDriver(id, trips))
-    // Catch any errors and log them
-    .catch(console.error);
+    // Catch any errors and log unexpected ones
+    .catch((err) => { if (err.message !== 'DRIVER_ASSIGNED') { console.error(err); } });
 }
 
 /**
