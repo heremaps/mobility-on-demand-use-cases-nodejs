@@ -19,7 +19,7 @@ Unless otherwise noted in `LICENSE` files for specific files or directories, the
 
 ## Requirements
 
-> Requires node >= 4.0.0
+> Requires node >= 6.0.0
 
 ## Setting both applications up
 * Run `npm install`

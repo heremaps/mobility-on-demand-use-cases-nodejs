@@ -27,11 +27,10 @@ const TripStatusEnum = {
 const WktIdAttribute = 'ID';
 let db;
 
-function initializeDb(areas, drivers, forceRecreate) {
+function initializeDb(areas, drivers, forceRecreate, fileName = 'demo.db') {
   return new Promise((fulfill, reject) => {
-    const file = 'demo.db';
-    const exists = fs.existsSync(file);
-    db = new sqlite.Database(file);
+    const exists = fs.existsSync(fileName);
+    db = new sqlite.Database(fileName);
     db.serialize();
     if (exists && !forceRecreate) {
       fulfill(db);
