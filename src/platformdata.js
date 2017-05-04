@@ -32,7 +32,7 @@ function buildPDETilesRequestQueryFromIndexResponse(indexLayerResponse) {
   return Object.assign({
     layer: indexLayerResponse.layer,
     level: indexLayerResponse.level,
-    tilexy: _.flatten(indexLayerResponse.tileXYs.map(obj => [obj.x, obj.y])),
+    tilexy: _.flatten(indexLayerResponse.tileXYs.map(obj => [obj.x, obj.y])).join(','),
   }, config);
 }
 
