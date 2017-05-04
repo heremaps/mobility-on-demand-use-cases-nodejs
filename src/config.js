@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+'use strict';
+
 const assert = require('assert');
 
 const config = {

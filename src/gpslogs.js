@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+'use strict';
+
 const berkeleyToSf = [
     { timestamp: '2016-05-19T00:15:39', lat: 37.870018333, lon: -122.270135000 },
     { timestamp: '2016-05-19T00:15:45', lat: 37.870003333, lon: -122.270240000 },

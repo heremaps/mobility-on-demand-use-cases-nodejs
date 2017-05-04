@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+'use strict';
+
 const geofencing = require('./geofencing');
 const matrixrouting = require('./matrixrouting');
 const tollcost = require('./tollcost');
