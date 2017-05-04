@@ -137,3 +137,5 @@ db.initializeDb(staticAreas, [], false)
   })
   // Catch any errors and log them
   .catch(console.error);
+
+module.exports = app;

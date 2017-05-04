@@ -1,0 +1,37 @@
+{
+  "Tiles": [
+    {
+      "Rows": [
+        {
+          "CARTO_ID": "718002093",
+          "ADMIN_PLACE_ID": "21009408",
+          "ADMIN_LEVEL": "2",
+          "ADMIN_ORDER": "1",
+          "FEATURE_TYPE": "909996",
+          "SOURCE_TYPE": "L",
+          "NAME": "California",
+          "LAT": "4007813,70312,,-70312,",
+          "LON": "-012234375,00,070313,00,-070313",
+          "INNER_LAT": null,
+          "INNER_LON": null
+        }
+      ]
+    }, {
+      "Rows": [
+        {
+          "CARTO_ID": "718002093",
+          "ADMIN_PLACE_ID": "21009408",
+          "ADMIN_LEVEL": "2",
+          "ADMIN_ORDER": "1",
+          "FEATURE_TYPE": "909996",
+          "SOURCE_TYPE": "L",
+          "NAME": "California",
+          "LAT": "3445313,70312,,-70312,",
+          "LON": "-011601562,00,070312,00,-070312",
+          "INNER_LAT": null,
+          "INNER_LON": null
+        }
+      ]
+    }
+  ]
+}

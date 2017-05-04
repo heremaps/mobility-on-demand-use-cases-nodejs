@@ -51,35 +51,36 @@ function initializeDb(areas, drivers, forceRecreate, fileName = 'demo.db') {
       }, (err) => {
         if (err) {
           console.error(err);
-          return reject(err);
-        }
-        db.each("SELECT rowid, name, admin_layer, admin_place_id, admin_layer || '#' || admin_place_id as comp FROM Areas", (error, row) => {
-          if (error) {
-            console.error(error);
-          } else {
-            console.log(`Area: ${row.name}, admin_layer: ${row.admin_layer}, admin_place_id: ${row.admin_place_id}, comp: ${row.comp}`);
-          }
-        });
+          reject(err);
+        } else {
+          db.each("SELECT rowid, name, admin_layer, admin_place_id, admin_layer || '#' || admin_place_id as comp FROM Areas", (error, row) => {
+            if (error) {
+              console.error(error);
+            } else {
+              console.log(`Area: ${row.name}, admin_layer: ${row.admin_layer}, admin_place_id: ${row.admin_place_id}, comp: ${row.comp}`);
+            }
+          });
 
-        async.each(drivers, (driver, callback2) => {
-          console.log(`Driver: ${driver.name}`);
-          // eslint-disable-next-line no-use-before-define
-          findAreaIdForLocation(driver.location)
-                        .then((areaId) => {
-                          console.log(`Inserting with area_id: ${areaId}`);
-                          db.prepare('INSERT INTO Drivers(name, latitude, longitude, area_id) VALUES (?, ?, ?, ?)')
-                              .run([driver.name, driver.location.lat, driver.location.lon, areaId], (dbError) => { callback2(dbError); })
-                              .finalize();
-                        })
-                        .catch(callback2);
-        }, (iteratorErr) => {
-          if (iteratorErr) {
-            console.error(iteratorErr);
-            reject(iteratorErr);
-          } else {
-            fulfill(db);
-          }
-        });
+          async.each(drivers, (driver, callback2) => {
+            console.log(`Driver: ${driver.name}`);
+            // eslint-disable-next-line no-use-before-define
+            findAreaIdForLocation(driver.location)
+              .then((areaId) => {
+                console.log(`Inserting with area_id: ${areaId}`);
+                db.prepare('INSERT INTO Drivers(name, latitude, longitude, area_id) VALUES (?, ?, ?, ?)')
+                  .run([driver.name, driver.location.lat, driver.location.lon, areaId], (dbError) => { callback2(dbError); })
+                  .finalize();
+              })
+              .catch(callback2);
+          }, (iteratorErr) => {
+            if (iteratorErr) {
+              console.error(iteratorErr);
+              reject(iteratorErr);
+            } else {
+              fulfill(db);
+            }
+          });
+        }
       });
       stmt.finalize();
     }
@@ -173,6 +174,18 @@ function getCandidateDriversForTrip(tripId) {
 function getOneDriver() {
   return new Promise((fulfill, reject) => {
     db.get('SELECT rowid, * FROM Drivers', (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        fulfill(row);
+      }
+    });
+  });
+}
+
+function getDriverByRowId(id) {
+  return new Promise((fulfill, reject) => {
+    db.get(`SELECT rowid, * FROM Drivers where rowid = ${id}`, (err, row) => {
       if (err) {
         reject(err);
       } else {
@@ -389,6 +402,7 @@ const database = {
   findAreaIdForLocation,
   getAllDrivers,
   getCandidateDriversForTrip,
+  getDriverByRowId,
   getDriversInArea,
   getGeofencesWkt,
   getNewTrips,
