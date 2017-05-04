@@ -47,15 +47,17 @@ function wktPolygonFromAreaRow(areaRow) {
 /**
  * GET API to get list of administrative areas for a certain location
  */
-app.get('/getAdminAreas.json', (req, res, next) => {
-  if (!_.isFinite(req.query.lat)) {
+app.get('/adminAreas', (req, res, next) => {
+  const latitude = Number(req.query.lat);
+  const longitude = Number(req.query.lon);
+  if (!_.isFinite(latitude)) {
     return next(Object.assign(new Error('Latitude must be a number'), { responseCode: 400 }));
   }
-  if (!_.isFinite(req.query.lon)) {
+  if (!_.isFinite(longitude)) {
     return next(Object.assign(new Error('Longitude must be a number'), { responseCode: 400 }));
   }
 
-  const location = { lat: req.query.lat, lon: req.query.lon };
+  const location = { lat: latitude, lon: longitude };
   // First find within which administrative areas the location falls
   return geofencing.findAdminAreasForLocation(location)
     .then((areas) => {
@@ -85,22 +87,22 @@ app.get('/getAdminAreas.json', (req, res, next) => {
 /**
  * GET API to get list of administrative areas already stored in the database
  */
-app.get('/getStoredAreas.json', (req, res, next) => {
+app.get('/storedAreas', (req, res, next) => {
   db.getStoredAreas()
-    .then(areas => res.send({ areas }))
+    .then(areas => res.send(areas))
     .catch(next);
 });
 
 /**
  * POST API to store an administrative area
  */
-app.post('/storeArea.json', (req, res, next) => {
-  const area = req.body.area;
-  if (!_.isObject(area) || !_.isString(area.name) || !_.isString(area.admin_layer) || !_.isString(area.admin_place_id)) {
+app.post('/storedAreas', (req, res, next) => {
+  const area = _.pick(req.body, ['name', 'admin_layer', 'admin_place_id']);
+  if (!_.isString(area.name) || !_.isFinite(area.admin_layer) || !_.isFinite(area.admin_place_id)) {
     return next(Object.assign(new Error('Invalid area'), { responseCode: 400 }));
   }
   return db.insertArea(area.name, area.admin_layer, area.admin_place_id)
-    .then(() => { res.send('OK'); })
+    .then(() => { res.status(201).end(); })
     .catch(next);
 });
 
@@ -108,7 +110,7 @@ function errorHandler() {
   // eslint-disable-next-line no-unused-vars
   return (err, req, res, next) => {
     console.error('error handler', err);
-    const message = Object.assign({}, err, { message: err.message });
+    const message = Object.assign({}, _.omit(err, 'responseCode'), { message: err.message });
     res.status(err.responseCode || 500).json(message);
   };
 }
