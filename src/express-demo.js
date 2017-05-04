@@ -13,6 +13,8 @@
  * Note: An endpoint for assigning drivers to admin areas is missing.
  */
 
+'use strict';
+
 const geofencing = require('./geofencing');
 const platformdata = require('./platformdata');
 const db = require('./db');

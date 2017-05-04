@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+'use strict';
+
 const config = require('./config');
 const superagent = require('superagent');
 

@@ -4,10 +4,10 @@
   "description": "HERE On-Demand Mobility SDK demos",
   "repository": "git@github.com:heremaps/mobility-on-demand-use-cases-node.git",
   "scripts": {
-    "cli-demo": "node --use-strict src/cli-demo.js",
-    "server": "node --use-strict src/express-demo.js",
+    "cli-demo": "node src/cli-demo.js",
+    "server": "node src/express-demo.js",
     "start": "npm run cli-demo",
-    "lint": "eslint --ext .js --max-warnings 0 src/",
+    "lint": "eslint --ext .js --max-warnings 0 .",
     "build-jsdoc": "jsdoc src/* -d doc -R README.md"
   },
   "author": "Thijs Mergaert <thijs.mergaert@here.com>",
