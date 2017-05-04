@@ -376,5 +376,7 @@ db.initializeDb(exampleAreas, exampleDrivers, true)
   .then(() => postProcessingScenario(gpslogs.berkeleyToSf))
   // Start the 'Delivery Sequence' scenario
   .then(() => deliverySequenceScenario(exampleDeliveryAddresses, exampleDepotLocation))
+  // Close database connection
+  .then(() => db.close())
   // Catch any errors and log them
   .catch(console.error);
