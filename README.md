@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/heremaps/mobility-on-demand-use-cases-nodejs.svg?branch=master)](https://travis-ci.org/heremaps/mobility-on-demand-use-cases-nodejs)
+
 # Mobility On Demand Use Cases (NodeJS)
 
 This repository hosts 2 demo applications developed in `NodeJS` exposing server-side and CLI integration with the **HERE REST APIs & Platform Extensions**.
@@ -40,6 +42,8 @@ Omit `<name-of-script>` to get a list of targets.
 
 * `lint`: lints js code with `eslint`
 * `build-jsdoc`: builds documentation into the `./doc` directory
+* `coverage`: run code coverage analysis
+* `test`: run linter and code coverage
 
 ## Notes
 

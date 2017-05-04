@@ -8,7 +8,9 @@
     "server": "node src/express-demo.js",
     "start": "npm run cli-demo",
     "lint": "eslint --ext .js --max-warnings 0 .",
-    "build-jsdoc": "jsdoc src/* -d doc -R README.md"
+    "build-jsdoc": "jsdoc src/* -d doc -R README.md",
+    "coverage": "istanbul cover _mocha -- --recursive && istanbul check-coverage",
+    "test": "npm run lint && npm run coverage"
   },
   "author": "Thijs Mergaert <thijs.mergaert@here.com>",
   "license": "MIT",
@@ -28,11 +30,17 @@
     "node": ">=4.0.0"
   },
   "devDependencies": {
-    "eslint": "3.17.1",
+    "eslint": "3.19.0",
     "eslint-config-airbnb": "14.1.0",
     "eslint-plugin-import": "2.2.0",
     "eslint-plugin-jsx-a11y": "4.0.0",
     "eslint-plugin-react": "6.10.0",
-    "jsdoc": "3.4.3"
+    "istanbul": "0.4.5",
+    "jsdoc": "3.4.3",
+    "mocha": "3.2.0",
+    "nock": "9.0.13",
+    "proxyquire": "1.7.11",
+    "sinon": "2.1.0",
+    "supertest": "3.0.0"
   }
 }

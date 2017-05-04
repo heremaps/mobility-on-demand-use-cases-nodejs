@@ -1,11 +1,17 @@
 {
+    "env": {
+      "mocha": true
+    },
+    "parserOptions": {
+      "sourceType": "script"
+    },
     "extends": "airbnb",
     "installedESLint": true,
     "plugins": [],
     "rules": {
-      "max-len": [1, 200, 2, {"ignoreComments": true}],
+      "max-len": ["warn", 200, { "tabWidth": 2 }, {"ignoreComments": true}],
       "no-console": "off",
       "no-plusplus": "off",
-      "camelcase": "off"
+      "strict": ["error", "global"]
     }
 }

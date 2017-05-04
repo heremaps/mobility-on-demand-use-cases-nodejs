@@ -1,4 +1,6 @@
 .DS_STORE
 node_modules
 demo.db
+test.db
 doc
+coverage
