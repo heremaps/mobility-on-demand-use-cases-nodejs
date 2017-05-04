@@ -23,7 +23,7 @@ function buildMatchRouteRequestQuery(routeMode) {
  *
  * @param {string} routeMode - The routing mode ('car' or 'pedestrian')
  * @param {string} gpx - The gpx trace
- * @returns {Promise}
+ * @returns {Array}
  */
 function matchGpx(routeMode, gpx) {
   const query = buildMatchRouteRequestQuery(routeMode);
