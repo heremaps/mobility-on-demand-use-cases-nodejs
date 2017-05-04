@@ -31,8 +31,8 @@ app.use(bodyParser.json());
 function wktPolygonFromAreaRow(areaRow) {
   // PDE returns lat and lon in 10^-5 degrees WGS84, with each value relative to the previous
   // For example: "3779297,1329,-563,-261,-155,-31,-319,"
-  const lats = areaRow.LAT.split(',').map(latStr => (Number(`${Number(latStr)}e-5`)));
-  const lons = areaRow.LON.split(',').map(lonStr => (Number(`${Number(lonStr)}e-5`)));
+  const lats = areaRow.LAT.split(',').map(latStr => Number(latStr) / 100000);
+  const lons = areaRow.LON.split(',').map(lonStr => Number(lonStr) / 100000);
   const pairs = [];
 
   // WKT format requires longitude first, then latitude
