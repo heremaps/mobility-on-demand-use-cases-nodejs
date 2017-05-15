@@ -50,6 +50,7 @@ function initializeDb(areas, drivers, forceRecreate) {
       }, (err) => {
         if (err) {
           console.error(err);
+          return reject(err);
         }
         db.each("SELECT rowid, name, admin_layer, admin_place_id, admin_layer || '#' || admin_place_id as comp FROM Areas", (error, row) => {
           if (error) {
@@ -72,6 +73,7 @@ function initializeDb(areas, drivers, forceRecreate) {
                         .catch(callback2);
         }, (iteratorErr) => {
           if (iteratorErr) {
+            console.error(iteratorErr);
             reject(iteratorErr);
           } else {
             fulfill(db);
