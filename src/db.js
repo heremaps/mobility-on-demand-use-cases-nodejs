@@ -27,11 +27,10 @@ const TripStatusEnum = {
 const WktIdAttribute = 'ID';
 let db;
 
-function initializeDb(areas, drivers, forceRecreate) {
+function initializeDb(areas, drivers, forceRecreate, fileName = 'demo.db') {
   return new Promise((fulfill, reject) => {
-    const file = 'demo.db';
-    const exists = fs.existsSync(file);
-    db = new sqlite.Database(file);
+    const exists = fs.existsSync(fileName);
+    db = new sqlite.Database(fileName);
     db.serialize();
     if (exists && !forceRecreate) {
       fulfill(db);
@@ -360,24 +359,45 @@ function findAreaIdForLocation(location) {
             .then(getMatchingArea);
 }
 
+function close() {
+  return new Promise((fulfill, reject) => {
+    console.log('Closing db connection.');
+    db.close((err) => {
+      if (err) {
+        console.error('Error while closing connection', err);
+        reject(err);
+      } else {
+        console.log('Db connection closed.');
+        fulfill();
+      }
+    });
+  });
+}
+
+function remove(filename) {
+  fs.unlinkSync(filename);
+}
+
 const database = {
-  initializeDb,
-  printDrivers,
-  getOneDriver,
-  getAllDrivers,
-  getDriversInArea,
-  getNewTrips,
-  getGeofencesWkt,
-  getCandidateDriversForTrip,
-  getVehicleSpecForDriver,
-  getStoredAreas,
-  findAreaIdForLocation,
-  createTrip,
-  insertArea,
   assignDriverToTrip,
   addCandidateDriver,
-  updateDriverLocation,
   clearAllTrips,
+  close,
+  createTrip,
+  findAreaIdForLocation,
+  getAllDrivers,
+  getCandidateDriversForTrip,
+  getDriversInArea,
+  getGeofencesWkt,
+  getNewTrips,
+  getOneDriver,
+  getStoredAreas,
+  getVehicleSpecForDriver,
+  initializeDb,
+  insertArea,
+  printDrivers,
+  remove,
+  updateDriverLocation,
   WktIdAttribute,
 };
 
