@@ -15,6 +15,8 @@ Visit the **HERE Developer Portal** for more information on the [HERE REST APIs 
 
 > You can obtain a set of credentials from the [Plans](https://developer.here.com/plans) page on developer.here.com.
 
+For more details about Mobility On Demand, visit the [HERE Mobility On Demand Toolkit](https://developer.here.com/mobility-on-demand-toolkit/documentation/topics/overview.html) page.
+
 ## License
 
 Unless otherwise noted in `LICENSE` files for specific files or directories, the [LICENSE](LICENSE) in the root applies to all content in this repository.
