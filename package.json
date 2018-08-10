@@ -20,10 +20,10 @@
     "body-parser": "1.17.1",
     "express": "4.15.2",
     "form-data": "2.1.2",
-    "lodash": "4.17.4",
+    "lodash": "4.17.5",
     "node-zip": "1.1.1",
     "sqlite3": "3.1.8",
-    "superagent": "3.5.0",
+    "superagent": "3.7.0",
     "xmlbuilder": "8.2.2"
   },
   "engines": {
