@@ -9,7 +9,7 @@
     "start": "npm run cli-demo",
     "lint": "eslint --ext .js --max-warnings 0 .",
     "build-jsdoc": "jsdoc src/* -d doc -R README.md",
-    "coverage": "istanbul cover _mocha -- --recursive && istanbul check-coverage",
+    "coverage": "istanbul cover _mocha -- --recursive --exit && istanbul check-coverage",
     "test": "npm run lint && npm run coverage"
   },
   "author": "Thijs Mergaert <thijs.mergaert@here.com>",
