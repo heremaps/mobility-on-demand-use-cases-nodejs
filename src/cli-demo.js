@@ -5,6 +5,8 @@
 
 'use strict';
 
+const bluebird = require('bluebird');
+const builder = require('xmlbuilder');
 const geofencing = require('./geofencing');
 const matrixrouting = require('./matrixrouting');
 const tollcost = require('./tollcost');
@@ -14,8 +16,6 @@ const geocoder = require('./geocoder');
 const waypointsequence = require('./waypointsequence');
 const db = require('./db');
 const gpslogs = require('./gpslogs');
-const bluebird = require('bluebird');
-const builder = require('xmlbuilder');
 
 const CUSTOM_LAYER_ID = 'ON_DEMAND_DEMO_LAYER';
 
@@ -130,14 +130,12 @@ function postProcessingScenario(gpsLog) {
   const gpx = buildGpx(gpsLog);
   // Then use the Route Matching Extension to match the GPX trace to HERE links
   return routematching.matchGpx('car', gpx)
-    .then(links =>
-          // We'll use a random driver for the sake of this example
-          db.getOneDriver()
-          // Get the relevant vehicle information required by the Toll Cost Extension
-          .then(driver => db.getVehicleSpecForDriver(numPassengers, driver))
-          // Then calculate the toll costs associated with the links that the route traverses
-          // eslint-disable-next-line no-use-before-define
-          .then(vehicleSpec => calculateCostForLinksPerCountry(mode, startTime, currency, vehicleSpec, links)))
+    .then(links => db.getOneDriver()
+      // Get the relevant vehicle information required by the Toll Cost Extension
+      .then(driver => db.getVehicleSpecForDriver(numPassengers, driver))
+      // Then calculate the toll costs associated with the links that the route traverses
+      // eslint-disable-next-line no-use-before-define
+      .then(vehicleSpec => calculateCostForLinksPerCountry(mode, startTime, currency, vehicleSpec, links)))
     // Then provide a summary of toll costs along the route per country
     .then((tollCosts) => {
       tollCosts.forEach((costByCountry) => {
@@ -290,24 +288,22 @@ function assignTrips() {
     .then((trips) => {
       // Iterating over trips in series to avoid having the same driver assigned to multiple trips
       // This is okay the purposes of this example, but may be too slow when dealing with high volumes of trips and drivers
-      bluebird.mapSeries(trips, trip =>
-        // For each trip, get a list of candidate drivers
-        db.getCandidateDriversForTrip(trip.rowid)
-          .then((drivers) => {
-            if (drivers.length === 0) {
-              return Promise.resolve();
-            }
-            const mode = 'fastest;car;traffic:enabled';
-            const starts = drivers.map(driver => ({ lat: driver.latitude, lon: driver.longitude }));
-            const destinations = [{ lat: trip.pickup_latitude, lon: trip.pickup_longitude }];
-            // Then calculate an ETA matrix from the drivers' locations to the pickup location
-            return matrixrouting.getEtaMatrix(starts, destinations, mode)
-              // Then find the closest driver
-              .then(matrix => getClosestDriver(drivers, matrix))
-              // Then assign the closest driver to the trip
-              // You can insert your more complex matchmaking algorithm here as this logic is fairly primitive
-              .then(closestDriver => db.assignDriverToTrip(trip.rowid, closestDriver));
-          }));
+      bluebird.mapSeries(trips, trip => db.getCandidateDriversForTrip(trip.rowid)
+        .then((drivers) => {
+          if (drivers.length === 0) {
+            return Promise.resolve();
+          }
+          const mode = 'fastest;car;traffic:enabled';
+          const starts = drivers.map(driver => ({ lat: driver.latitude, lon: driver.longitude }));
+          const destinations = [{ lat: trip.pickup_latitude, lon: trip.pickup_longitude }];
+          // Then calculate an ETA matrix from the drivers' locations to the pickup location
+          return matrixrouting.getEtaMatrix(starts, destinations, mode)
+          // Then find the closest driver
+            .then(matrix => getClosestDriver(drivers, matrix))
+          // Then assign the closest driver to the trip
+          // You can insert your more complex matchmaking algorithm here as this logic is fairly primitive
+            .then(closestDriver => db.assignDriverToTrip(trip.rowid, closestDriver));
+        }));
     });
 }
 

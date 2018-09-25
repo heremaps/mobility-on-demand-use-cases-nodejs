@@ -5,9 +5,9 @@
  * All rights reserved.
  */
 
-const config = require('./config');
 const superagent = require('superagent');
 const _ = require('lodash');
+const config = require('./config');
 
 
 /**
@@ -53,7 +53,8 @@ function getEtaMatrix(starts, destinations, mode) {
         etaMatrix = result.body.response.matrixEntry.map(element => ({
           startIndex: element.startIndex,
           destinationIndex: element.destinationIndex,
-          eta: element.summary.travelTime }));
+          eta: element.summary.travelTime,
+        }));
       }
       return etaMatrix;
     })

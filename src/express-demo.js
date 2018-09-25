@@ -15,13 +15,13 @@
 
 'use strict';
 
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
 const geofencing = require('./geofencing');
 const platformdata = require('./platformdata');
 const db = require('./db');
 
-const _ = require('lodash');
-const express = require('express');
-const bodyParser = require('body-parser');
 
 const app = express();
 app.use(bodyParser.json());

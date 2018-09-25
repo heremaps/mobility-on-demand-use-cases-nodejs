@@ -6,7 +6,6 @@
       "sourceType": "script"
     },
     "extends": "airbnb",
-    "installedESLint": true,
     "plugins": [],
     "rules": {
       "max-len": ["warn", 200, { "tabWidth": 2 }, {"ignoreComments": true}],

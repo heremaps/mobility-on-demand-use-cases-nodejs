@@ -5,8 +5,8 @@
 
 'use strict';
 
-const config = require('./config');
 const superagent = require('superagent');
+const config = require('./config');
 
 /**
  * Builds a request query for the calculateroute.json endpoint of the Toll Cost Extension API.

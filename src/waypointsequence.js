@@ -5,9 +5,9 @@
 
 'use strict';
 
-const config = require('./config');
 const superagent = require('superagent');
 const _ = require('lodash');
+const config = require('./config');
 
 /**
  * Builds a request query for the Waypoint Sequence Extension API.
@@ -34,7 +34,8 @@ function buildFindSequenceRequestQuery(mode, optimizeFor, start, end, destinatio
       departure: 'now',
     },
     config,
-    destinationParams);
+    destinationParams,
+  );
 }
 
 /**

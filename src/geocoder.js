@@ -5,8 +5,8 @@
 
 'use strict';
 
-const config = require('./config');
 const superagent = require('superagent');
+const config = require('./config');
 
 /**
  * Builds a request query object for the Geocoder API.
@@ -36,8 +36,8 @@ function geocode(address) {
       const view = result.body.Response.View[0];
       const location = view.Result[0].Location;
       // If navigation position is available, return it, otherwise, return display position
-      const position = (location.NavigationPosition && location.NavigationPosition.length > 0) ?
-                        location.NavigationPosition[0] : location.DisplayPosition;
+      const position = (location.NavigationPosition && location.NavigationPosition.length > 0)
+        ? location.NavigationPosition[0] : location.DisplayPosition;
       return { lat: position.Latitude, lon: position.Longitude };
     })
     .catch((err) => {

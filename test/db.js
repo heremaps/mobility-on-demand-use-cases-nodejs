@@ -41,7 +41,7 @@ describe('database test suite', () => {
   });
 
   it('should get stored areas', () => db.getStoredAreas()
-     .then(areas => assert.deepEqual(areas.map(area => _.omit(area, 'rowid')), testAreas)));
+    .then(areas => assert.deepEqual(areas.map(area => _.omit(area, 'rowid')), testAreas)));
 
   it('should get all drivers', () => {
     const expected = [
@@ -79,8 +79,8 @@ describe('database test suite', () => {
   });
 
   it('driver should not be a candidate for a trip', () => db.getOneDriver()
-     .then(driver => db.driverIsTripCandidate(driver.rowid))
-     .then(isCandidate => assert.strictEqual(isCandidate, false)));
+    .then(driver => db.driverIsTripCandidate(driver.rowid))
+    .then(isCandidate => assert.strictEqual(isCandidate, false)));
 
   it('should get candidate drivers for trip', () => {
     let trip;
@@ -119,6 +119,6 @@ describe('database test suite', () => {
   });
 
   it('should clear all trips', () => db.clearAllTrips()
-      .then(() => db.getNewTrips())
-      .then(trips => assert.strictEqual(trips.length, 0)));
+    .then(() => db.getNewTrips())
+    .then(trips => assert.strictEqual(trips.length, 0)));
 });
