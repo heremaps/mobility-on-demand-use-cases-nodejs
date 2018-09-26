@@ -5,9 +5,9 @@
 
 'use strict';
 
-const config = require('./config');
 const superagent = require('superagent');
 const _ = require('lodash');
+const config = require('./config');
 
 /**
  * Builds a request query object for the Platform Data Extension API ADMIN_PLACE_X indexes.
@@ -81,12 +81,7 @@ function getTilesForIndexResponse(adminPlaceIds, indexResponse) {
         console.error('Error while querying Platform Data Extension tiles API', err.status, err.message, err.response && err.response.body);
         return Promise.reject(new Error(err.message));
       });
-  })).then(tileChunks =>
-           // Flatten and filter responses to return relevant rows
-           _.flattenDeep(tileChunks.map(tileChunk =>
-                                        tileChunk.Tiles.map(tile =>
-                                                            tile.Rows.filter(row =>
-                                                                             adminPlaceIds.includes(row.ADMIN_PLACE_ID))))));
+  })).then(tileChunks => _.flattenDeep(tileChunks.map(tileChunk => tileChunk.Tiles.map(tile => tile.Rows.filter(row => adminPlaceIds.includes(row.ADMIN_PLACE_ID))))));
 }
 
 module.exports = {

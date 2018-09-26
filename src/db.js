@@ -18,7 +18,7 @@ const geofencing = require('./geofencing');
  * for your production environment, so please consider storing your data in *
  * a storage format that suits your needs.                                  *
  *                                                                          *
- ****************************************************************************/
+ *************************************************************************** */
 
 const TripStatusEnum = {
   NEW: 0,
@@ -127,27 +127,27 @@ function getNewTrips() {
   return new Promise((fulfill, reject) => {
     const newTrips = [];
     db.prepare('SELECT rowid, * FROM Trips WHERE status = ?')
-          .each([TripStatusEnum.NEW], (err, row) => {
-            if (row) {
-              newTrips.push(row);
-            }
-          }, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              fulfill(newTrips);
-            }
-          });
+      .each([TripStatusEnum.NEW], (err, row) => {
+        if (row) {
+          newTrips.push(row);
+        }
+      }, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          fulfill(newTrips);
+        }
+      });
   });
 }
 
 function getGeofencesWkt() {
   return getNewTrips()
-        .then((newTrips) => {
-          let wkt = `${WktIdAttribute}\tWKT\n`;
-          wkt += newTrips.map(trip => `${trip.rowid}\t${trip.shape}`).join('\n');
-          return wkt;
-        });
+    .then((newTrips) => {
+      let wkt = `${WktIdAttribute}\tWKT\n`;
+      wkt += newTrips.map(trip => `${trip.rowid}\t${trip.shape}`).join('\n');
+      return wkt;
+    });
 }
 
 function getCandidateDriversForTrip(tripId) {
@@ -155,19 +155,19 @@ function getCandidateDriversForTrip(tripId) {
     console.log('Finding candidate drivers for trip', tripId);
     const drivers = [];
     db.prepare('SELECT d.name, d.latitude, d.longitude, d.rowid FROM Trip_Driver td JOIN Drivers d ON td.driver_id = d.rowid WHERE td.trip_id = ? ')
-          .each([tripId], (err, row) => {
-            if (row) {
-              drivers.push(row);
-            }
-          }, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              console.log('Found drivers:', drivers);
-              fulfill(drivers);
-            }
-          })
-          .finalize();
+      .each([tripId], (err, row) => {
+        if (row) {
+          drivers.push(row);
+        }
+      }, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          console.log('Found drivers:', drivers);
+          fulfill(drivers);
+        }
+      })
+      .finalize();
   });
 }
 
@@ -232,14 +232,14 @@ function getStoredAreas() {
 function createTrip(pickupLocation, dropoffLocation, wkt) {
   return new Promise((fulfill, reject) => {
     db.prepare('INSERT INTO Trips(shape, pickup_latitude, pickup_longitude, dropoff_latitude, dropoff_longitude, status) VALUES(?, ?, ?, ?, ?, ?)')
-          .run([wkt, pickupLocation.lat, pickupLocation.lon, dropoffLocation.lat, dropoffLocation.lon, TripStatusEnum.NEW], (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              fulfill();
-            }
-          })
-          .finalize();
+      .run([wkt, pickupLocation.lat, pickupLocation.lon, dropoffLocation.lat, dropoffLocation.lon, TripStatusEnum.NEW], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          fulfill();
+        }
+      })
+      .finalize();
   });
 }
 
@@ -247,14 +247,14 @@ function updateDriverLocation(id, location) {
   return new Promise((fulfill, reject) => {
     console.log('Updating driver', id, 'location');
     db.prepare('UPDATE Drivers SET latitude = ?, longitude = ? WHERE rowid = ?')
-          .run([location.lat, location.lon, id], (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              fulfill();
-            }
-          })
-          .finalize();
+      .run([location.lat, location.lon, id], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          fulfill();
+        }
+      })
+      .finalize();
   });
 }
 
@@ -274,64 +274,64 @@ function assignDriverToTrip(tripId, driverId) {
   return new Promise((fulfill, reject) => {
     console.log('Assigning driver', driverId, 'to trip', tripId);
     db.prepare('UPDATE Trips SET status = ? WHERE rowid = ?')
-          .run([TripStatusEnum.ASSIGNED, tripId], (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              db.prepare('DELETE FROM Trip_Driver WHERE trip_id = ? AND driver_id != ?')
-                  .run([tripId, driverId], (error) => {
-                    if (error) {
-                      reject(error);
-                    } else {
-                      fulfill();
-                    }
-                  })
-                  .finalize();
-            }
-          })
-          .finalize();
+      .run([TripStatusEnum.ASSIGNED, tripId], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          db.prepare('DELETE FROM Trip_Driver WHERE trip_id = ? AND driver_id != ?')
+            .run([tripId, driverId], (error) => {
+              if (error) {
+                reject(error);
+              } else {
+                fulfill();
+              }
+            })
+            .finalize();
+        }
+      })
+      .finalize();
   });
 }
 
 function addCandidateDriver(driverId, tripIds) {
   return Promise.resolve(tripIds)
-        .then(resolvedTripIds => new Promise((fulfill, reject) => {
-          async.each(resolvedTripIds, (tripId, callback) => {
-            console.log('Adding driver', driverId, 'as candidate for trip', tripId);
-            db.prepare('INSERT OR IGNORE INTO Trip_Driver(driver_id, trip_id) VALUES(?, ?)')
-                      .run([driverId, tripId], (err) => {
-                        callback(err);
-                      })
-                      .finalize();
-          }, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              fulfill();
-            }
-          });
-        }));
+    .then(resolvedTripIds => new Promise((fulfill, reject) => {
+      async.each(resolvedTripIds, (tripId, callback) => {
+        console.log('Adding driver', driverId, 'as candidate for trip', tripId);
+        db.prepare('INSERT OR IGNORE INTO Trip_Driver(driver_id, trip_id) VALUES(?, ?)')
+          .run([driverId, tripId], (err) => {
+            callback(err);
+          })
+          .finalize();
+      }, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          fulfill();
+        }
+      });
+    }));
 }
 
 function getDriversInArea(areaId) {
   return new Promise((fulfill, reject) => {
     const drivers = [];
     db.prepare('SELECT d.rowid, d.name, d.latitude, d.longitude FROM Drivers d JOIN Areas a ON d.area_id = a.rowid WHERE a.rowid = ?')
-          .each([areaId], (err, row) => {
-            if (err) {
-              console.error(err);
-            }
-            if (row) {
-              drivers.push(row);
-            }
-          }, (err) => {
-            if (err) {
-              console.error(err);
-              reject(err);
-            } else {
-              fulfill(drivers);
-            }
-          });
+      .each([areaId], (err, row) => {
+        if (err) {
+          console.error(err);
+        }
+        if (row) {
+          drivers.push(row);
+        }
+      }, (err) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          fulfill(drivers);
+        }
+      });
   });
 }
 
@@ -354,14 +354,14 @@ function getMatchingArea(foundAreas) {
     const placeholders = _.times(areaList.length, _.constant('?')).join(', ');
     const query = `SELECT rowid FROM Areas WHERE admin_layer || '#' || admin_place_id IN (${placeholders})`;
     db.prepare(query)
-          .get(areaList, (err, row) => {
-            if (err) {
-              reject(err);
-            } else {
-              const matchedArea = row ? row.rowid : null;
-              fulfill(matchedArea);
-            }
-          }).finalize();
+      .get(areaList, (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          const matchedArea = row ? row.rowid : null;
+          fulfill(matchedArea);
+        }
+      }).finalize();
   });
 }
 
@@ -369,21 +369,21 @@ function getMatchingArea(foundAreas) {
 function insertArea(name, admin_layer, admin_place_id) {
   return new Promise((fulfill, reject) => {
     db.prepare('INSERT INTO Areas(name, admin_layer, admin_place_id) VALUES (?, ?, ?)')
-            // eslint-disable-next-line camelcase
-            .run([name, admin_layer, admin_place_id], (err) => {
-              if (err) {
-                reject(err);
-              } else {
-                fulfill();
-              }
-            })
-            .finalize();
+    // eslint-disable-next-line camelcase
+      .run([name, admin_layer, admin_place_id], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          fulfill();
+        }
+      })
+      .finalize();
   });
 }
 
 function findAreaIdForLocation(location) {
   return geofencing.findAdminAreasForLocation(location)
-            .then(getMatchingArea);
+    .then(getMatchingArea);
 }
 
 function close() {

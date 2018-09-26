@@ -126,7 +126,8 @@ describe('platform data', () => {
     addNockInterceptorForTiles();
 
     const expectedTiles = [
-      { CARTO_ID: '718002093',
+      {
+        CARTO_ID: '718002093',
         ADMIN_PLACE_ID: '21009408',
         ADMIN_LEVEL: '2',
         ADMIN_ORDER: '1',
@@ -136,8 +137,10 @@ describe('platform data', () => {
         LAT: '4007813,70312,,-70312,',
         LON: '-012234375,00,070313,00,-070313',
         INNER_LAT: null,
-        INNER_LON: null },
-      { CARTO_ID: '718002093',
+        INNER_LON: null,
+      },
+      {
+        CARTO_ID: '718002093',
         ADMIN_PLACE_ID: '21009408',
         ADMIN_LEVEL: '2',
         ADMIN_ORDER: '1',
@@ -147,7 +150,8 @@ describe('platform data', () => {
         LAT: '3445313,70312,,-70312,',
         LON: '-011601562,00,070312,00,-070312',
         INNER_LAT: null,
-        INNER_LON: null },
+        INNER_LON: null,
+      },
     ];
 
     const indexResponse = {

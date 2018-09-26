@@ -33,7 +33,8 @@ describe('tollcost', () => {
           waypoint1: '37.787526,-122.407603',
           mode: 'fastest;car;traffic:enabled',
           currency: 'USD',
-        }, mockedConfig))
+        }, mockedConfig,
+      ))
       .reply(200, {
         costs: {
           totalCost: 14,
@@ -58,7 +59,8 @@ describe('tollcost', () => {
           mode: 'fastest;car;traffic:enabled',
           currency: 'USD',
         },
-        mockedConfig))
+        mockedConfig,
+      ))
       .reply(400, {
         message: 'Bad Request',
       });
@@ -81,7 +83,8 @@ describe('tollcost', () => {
           mode: 'fastest;car;traffic:enabled',
           currency: 'USD',
         },
-        mockedConfig))
+        mockedConfig,
+      ))
       .reply(200, {
         costsByCountry: [{ country: 'USA', amountInTargetCurrency: 5 }],
       });
@@ -104,7 +107,8 @@ describe('tollcost', () => {
           mode: 'fastest;car;traffic:enabled',
           currency: 'USD',
         },
-        mockedConfig))
+        mockedConfig,
+      ))
       .reply(400, {
         message: 'Bad Request',
       });

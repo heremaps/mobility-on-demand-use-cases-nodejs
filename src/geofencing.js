@@ -5,11 +5,11 @@
 
 'use strict';
 
-const config = require('./config');
 
 const _ = require('lodash');
 const superagent = require('superagent');
 const zip = require('node-zip')();
+const config = require('./config');
 
 /**
  * Builds a GET request for the Geofencing Extension using pre-defined adminstrative area layers.
@@ -71,13 +71,14 @@ function findAdminAreasForLocation(location) {
   return superagent.get('https://maps.gfe.cit.api.here.com/1/search/proximity.json')
     .query(query)
     .then((result) => {
-      const geometries = result.body.geometries;
+      const { geometries } = result.body;
       if (geometries) {
         areas = geometries.filter(geometry => geometry.distance <= 0).map(geometry => ({
           name: geometry.attributes.NAME,
           admin_layer: geometry.attributes.ADMIN_ORDER,
           admin_place_id: geometry.attributes.ADMIN_PLACE_ID,
-          geometry: geometry.geometry }));
+          geometry: geometry.geometry,
+        }));
       }
       return areas;
     })
@@ -99,7 +100,7 @@ function searchCustomLayers(location, layerIds, keyAttributes) {
   return superagent.get('https://cle.cit.api.here.com/2/search/proximity.json')
     .query(query)
     .then((result) => {
-      const geometries = result.body.geometries;
+      const { geometries } = result.body;
       if (geometries) {
         rows = geometries.filter(geometry => geometry.distance <= 0).map((geometry) => {
           let keyAttribute;
@@ -107,7 +108,7 @@ function searchCustomLayers(location, layerIds, keyAttributes) {
           if (geometry.layerId) {
             keyAttribute = keyAttributes[layerIds.indexOf(geometry.layerId)];
           } else {
-            keyAttribute = keyAttributes[0];
+            [keyAttribute] = keyAttributes;
           }
           return geometry.attributes[keyAttribute];
         });
@@ -131,7 +132,7 @@ function uploadWkt(layerId, wkt) {
   // The WKT filename is arbitrary, but must have the .wkt extension
   zip.file('wktUpload.wkt', wkt);
   const wktData = zip.generate({ type: 'base64', compression: 'DEFLATE' });
-  const buffer = new Buffer(wktData, 'base64');
+  const buffer = Buffer.from(wktData, 'base64');
   const query = buildUploadLayerRequestQuery(layerId);
   return superagent.post('https://cle.cit.api.here.com/2/layers/upload.json')
     .query(query)

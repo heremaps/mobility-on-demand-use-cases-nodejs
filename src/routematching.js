@@ -5,8 +5,8 @@
 
 'use strict';
 
-const config = require('./config');
 const superagent = require('superagent');
+const config = require('./config');
 
 /**
  * Builds a request query object for the Route Matching Extension API.
@@ -17,7 +17,8 @@ const superagent = require('superagent');
 function buildMatchRouteRequestQuery(routeMode) {
   return Object.assign(
     { routemode: routeMode },
-    config);
+    config,
+  );
 }
 
 /**

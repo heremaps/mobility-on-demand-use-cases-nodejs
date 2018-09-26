@@ -5,8 +5,8 @@
 
 'use strict';
 
-const config = require('./config');
 const superagent = require('superagent');
+const config = require('./config');
 
 /**
  * Builds a request query object for the Isoline Routing API.
@@ -47,11 +47,9 @@ function getReverseIsochrone(location, range, mode) {
       let wkt = '';
       // If the response contains one or more isolines, convert them to a WKT MULTIPOLYGON
       if (result.body.response && result.body.response.isoline) {
-        wkt = `MULTIPOLYGON (${result.body.response.isoline.map(isoline =>
-                                     isoline.component.map(component =>
-                                       `((${component.shape.map(shape =>
-                                                                // Reverse order of latitude and longitude, WKT expects them in the format X Y, where X is longitude and Y is latitude
-                                                                shape.split(',').reverse().join(' ')).join(', ')}))`).join(', ')).join(', ')})`;
+        const polygon = result.body.response.isoline.map(isoline => isoline.component.map(component => `((${component.shape.map(shape => shape.split(',').reverse().join(' ')).join(', ')}))`)
+          .join(', ')).join(', ');
+        wkt = `MULTIPOLYGON (${polygon})`;
       }
       return wkt;
     })

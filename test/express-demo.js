@@ -39,27 +39,24 @@ describe('server test suite', () => {
       });
   });
 
-  it('getting admin areas should fail if latitude is not a number', () =>
-     request(app)
-      .get('/adminAreas')
-      .query({ lat: NaN, lon: -122.268234 })
-      .expect('Content-Type', /json/)
-      .expect(400)
-      .expect({ message: 'Latitude must be a number' }));
+  it('getting admin areas should fail if latitude is not a number', () => request(app)
+    .get('/adminAreas')
+    .query({ lat: NaN, lon: -122.268234 })
+    .expect('Content-Type', /json/)
+    .expect(400)
+    .expect({ message: 'Latitude must be a number' }));
 
-  it('getting admin areas should fail if longitude is not a number', () =>
-     request(app)
-     .get('/adminAreas')
-     .query({ lat: 37.870242, lon: NaN })
-     .expect('Content-Type', /json/)
-     .expect(400)
-     .expect({ message: 'Longitude must be a number' }));
+  it('getting admin areas should fail if longitude is not a number', () => request(app)
+    .get('/adminAreas')
+    .query({ lat: 37.870242, lon: NaN })
+    .expect('Content-Type', /json/)
+    .expect(400)
+    .expect({ message: 'Longitude must be a number' }));
 
-  it('should get stored areas', () =>
-     request(app)
-     .get('/storedAreas')
-     .expect('Content-Type', /json/)
-     .expect(mockedAreas));
+  it('should get stored areas', () => request(app)
+    .get('/storedAreas')
+    .expect('Content-Type', /json/)
+    .expect(mockedAreas));
 
   it('should store area', () => {
     const area = {
