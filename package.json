@@ -15,7 +15,7 @@
   "author": "Thijs Mergaert <thijs.mergaert@here.com>",
   "license": "MIT",
   "dependencies": {
-    "async": "~2.6.1",
+    "async": "~2.6.4",
     "bluebird": "~3.5.0",
     "body-parser": "~1.18.3",
     "express": "~4.16.3",
